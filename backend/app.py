@@ -56,7 +56,10 @@ def get_result():
         #  把所有处理好的数据放到字典all_result中，极端情况下是否会很耗时？
         while not run_ocr.output_queue.empty():
             one = run_ocr.output_queue.get()
-            all_result[one['uid']] = one['ocr_data']
+            all_result[one['uid']] = {
+                'ocr_data': one['ocr_data'],
+                'dtime':one['dtime']
+            }
 
         print(all_result)
         # id在字典中，说明已经处理完毕，则返回识别结果

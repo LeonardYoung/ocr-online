@@ -201,7 +201,7 @@
 
                 //调用子组件方法
                 this.$refs.childResultPresent.pictureClicked(file.uuid)
-                // this.getResultFromHost(file.uuid)
+                this.getResultFromHost(file.uuid)
 
 
             },

@@ -38,7 +38,7 @@
                 </div>
                 <div v-else-if="resultShow===2" class="result-box"  v-bind:style="{ minHeight: 600 + 'px' }">
                     <ul>
-                        <li class="res-text" v-for="(line,index) in ocrResult" v-bind:key="index" v-on:click="onTextResultClick(index)">
+                        <li class="res-text" v-for="(line,index) in ocrResult.ocr_data" v-bind:key="index" v-on:click="onTextResultClick(index)">
                             {{ line.text }}
                         </li>
                     </ul>
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+    import { message } from 'ant-design-vue';
     export default {
         name: "resultPresentText",
         props: ['previewImage','axiosResult'],
@@ -58,7 +59,7 @@
                 resultShow : 0,
                 message : "服务器处理中，请稍后查询",
                 previewVisible : false,
-                ocrResult:[],
+                ocrResult:{},
                 textClickIndex:-1,
                
 
@@ -99,6 +100,10 @@
                     // 服务器处理完成，展示结果
                     this.resultShow = 2;
                     this.ocrResult = result.data.result
+                   
+                    let dtime = this.ocrResult.dtime.toFixed(2);//  toFixed(this.ocrResult.dtime);
+                    // console.log(dtime)
+                    message.info('该图片识别用时：'+ dtime+' s');
                     // 模板渲染完成后执行，否则paintResult中会报错找不到canvas
                     const that = this;
                     this.$nextTick(()=>{
@@ -156,7 +161,7 @@
 
                 // 绘制矩形
                 Ctx.beginPath();
-                for(let one of this.ocrResult){
+                for(let one of this.ocrResult.ocr_data){
                     this.paintRectangle(Ctx,this.pointConvert(one.text_box_position),this.defaultColor,1);
                 }
                 Ctx.closePath();
@@ -164,7 +169,8 @@
                 // 绘制高亮状态
                 if(this.textClickIndex !== -1){
                     Ctx.beginPath();
-                    this.paintRectangle(Ctx,this.pointConvert(this.ocrResult[this.textClickIndex].text_box_position),this.hightLightColor,3);
+                    this.paintRectangle(Ctx,this.pointConvert(this.ocrResult.ocr_data[this.textClickIndex].text_box_position),
+                    this.hightLightColor,3);
                     Ctx.closePath();
                 }
                 

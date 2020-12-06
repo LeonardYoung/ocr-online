@@ -37,7 +37,8 @@ def target_ocr(t, inq, ouq):
         out_data = {
             'uid': one['uuid'],
             # 'data': res[0]
-            'ocr_data': json.loads(res)[0]['data']
+            'ocr_data': json.loads(res)[0]['data'],
+            'dtime': dtime
         }
         ouq.put(out_data)
 
