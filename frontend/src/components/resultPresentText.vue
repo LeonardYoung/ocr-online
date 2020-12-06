@@ -28,11 +28,13 @@
                     <p class="message-info">请选择一张图片查看识别结果</p>
                 </div>
                 <div v-else-if="resultShow===1" class="result-box">
-                    <a-spin size="large">
-                        <p class="message-info">
-                            {{message}}
-                        </p>
-                    </a-spin>
+                    <!-- <div class="spin-root"> -->
+                        <a-spin class="spinner" size="large">
+                            <p class="message-info">
+                                {{message}}
+                            </p>
+                        </a-spin>
+                    <!-- </div> -->
                 </div>
                 <div v-else-if="resultShow===2" class="result-box"  v-bind:style="{ minHeight: 600 + 'px' }">
                     <ul>
@@ -43,8 +45,6 @@
                 </div>
             </a-col>
         </a-row>
-
-
     </div>
 </template>
 
@@ -56,7 +56,7 @@
         data(){
             return{
                 resultShow : 0,
-                message : "",
+                message : "服务器处理中，请稍后查询",
                 previewVisible : false,
                 ocrResult:[],
                 textClickIndex:-1,
@@ -154,6 +154,7 @@
                 let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
                 this.clearCanvas();
 
+                // 绘制矩形
                 Ctx.beginPath();
                 for(let one of this.ocrResult){
                     this.paintRectangle(Ctx,this.pointConvert(one.text_box_position),this.defaultColor,1);
@@ -161,10 +162,11 @@
                 Ctx.closePath();
 
                 // 绘制高亮状态
-                Ctx.beginPath();
-                // Ctx.lineWidth = 2;
-                this.paintRectangle(Ctx,this.pointConvert(this.ocrResult[this.textClickIndex].text_box_position),this.hightLightColor,3);
-                Ctx.closePath();
+                if(this.textClickIndex !== -1){
+                    Ctx.beginPath();
+                    this.paintRectangle(Ctx,this.pointConvert(this.ocrResult[this.textClickIndex].text_box_position),this.hightLightColor,3);
+                    Ctx.closePath();
+                }
                 
             },
             /**
@@ -307,7 +309,7 @@
                 console.log('uid=',uid)
                 this.previewVisible = 1;
                 this.resultShow = 1;
-                this.message = '查询中'
+                this.message = '服务器处理中，请稍后查询'
                 this.ocrResult = null;
 
                 
@@ -433,6 +435,14 @@
 </script>
 
 <style scoped>
+    .spinner{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform:translate(-50%,-50%);
+    }
     .dragAble {
         position: absolute;
         /*cursor: move;*/

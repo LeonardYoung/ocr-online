@@ -27,7 +27,7 @@
                         <h1> OCR 在线演示系统 </h1>
                     </a-col>
 
-                    <a-col flex="100px">
+                    <!-- <a-col flex="100px">
                         <a-button type="primary" @click="showDrawer">设置</a-button>
                         <a-drawer
                                 title="设置"
@@ -52,13 +52,13 @@
                             </div>
                         </a-drawer>
 
-                    </a-col>
+                    </a-col> -->
 
                 </a-row>
 
 
             </a-layout-header>
-            <a-layout-content>
+            <a-layout-content  class="content">
                 <resultTextOnly v-if="this.presentSelect==='1' "
                                ref="childResultPresent"
                                :preview-image="previewImage"
@@ -201,7 +201,7 @@
 
                 //调用子组件方法
                 this.$refs.childResultPresent.pictureClicked(file.uuid)
-                this.getResultFromHost(file.uuid)
+                // this.getResultFromHost(file.uuid)
 
 
             },
@@ -236,14 +236,20 @@
 </script>
 
 <style scoped>
+    .content{
+        background-image: url('/bg5.jpg');
+        /* background-color: skyblue;; */
+    }
     h1{
         font-size: 40px;
+        /* color: white; */
         text-align: center;
         /*position: relative;*/
         /*top:40px*/
     }
     .header{
         background-color: skyblue;
+        /* background-image: url('/bg3.gif'); */
         height: 10%;
         overflow: hidden;
     }
