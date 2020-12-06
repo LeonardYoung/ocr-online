@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
-import uuid, json
+import uuid
+import json
 
 import time
 from threading import Lock
@@ -50,8 +51,6 @@ all_result = {}
 def get_result():
     print(request, 'request')
     uid = request.get_json()['uuid']
-
-
     result = {}
     try:
         #  把所有处理好的数据放到字典all_result中，极端情况下是否会很耗时？

@@ -1,2 +1,5 @@
+/backend/.idea
+/backend/__pycache__/*
+/.vscode
 /backend/input
 /backend/ocr_result

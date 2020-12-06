@@ -74,6 +74,9 @@
                 canvasHeight:300,
                 canvasWidth:300,
                 oDragObj:{},
+
+                defaultColor: '#0000FF',
+                hightLightColor: '#FF0000'
                 // oCanvas:{}
             }
         },
@@ -111,28 +114,13 @@
 
         methods:{
             /**
-             * @description: 监听识别文字点击事件。点击后应高亮文本位置。
+             * @description: 监听识别文字点击事件。点击后重新绘制矩形框，且高亮选中文本。
              * @param {*} index
              * @return {*}
              */
             onTextResultClick(index){
-                console.log(index)
-                let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
-
-                // 清除原来的高亮状态
-                if(this.textClickIndex !== -1){
-                    Ctx.beginPath();
-                    this.paintRectangle(Ctx,this.pointConvert(this.ocrResult[index].text_box_position),"#FF0000");
-                    Ctx.closePath();
-                }
-
-                // 绘制高亮状态
-                Ctx.beginPath();
-                this.paintRectangle(Ctx,this.pointConvert(this.ocrResult[index].text_box_position),"#00FF00");
-                Ctx.closePath();
-
                 this.textClickIndex = index;
-
+                this.paintResult();
             },
             /**
              * @description: 在画布上画一个矩形
@@ -140,13 +128,14 @@
              * @param {*} points 坐标
              * @return {*}
              */
-            paintRectangle(ctx,points,lineColor){
+            paintRectangle(ctx,points,lineColor,lineWidth){
                 if(points.length !== 4){
                     console.log('bad rectangle')
                     return
                 }
 
                 ctx.strokeStyle=lineColor;
+                ctx.lineWidth = lineWidth;
                 ctx.moveTo(points[0][0],points[0][1])
                 for ( let i = 1; i < 4; i++){
                     ctx.lineTo(points[i][0],points[i][1])
@@ -163,13 +152,18 @@
             paintResult(){
                 
                 let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
-                // console.log("paintReulst ,Ctx=",Ctx)
                 this.clearCanvas();
 
                 Ctx.beginPath();
                 for(let one of this.ocrResult){
-                    this.paintRectangle(Ctx,this.pointConvert(one.text_box_position),"#FF0000");
+                    this.paintRectangle(Ctx,this.pointConvert(one.text_box_position),this.defaultColor,1);
                 }
+                Ctx.closePath();
+
+                // 绘制高亮状态
+                Ctx.beginPath();
+                // Ctx.lineWidth = 2;
+                this.paintRectangle(Ctx,this.pointConvert(this.ocrResult[this.textClickIndex].text_box_position),this.hightLightColor,3);
                 Ctx.closePath();
                 
             },

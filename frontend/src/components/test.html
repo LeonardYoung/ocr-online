@@ -45,6 +45,7 @@
     let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
     Ctx.beginPath()
     Ctx.strokeStyle="#FF0000";
+    Ctx.lineWidth = 1;
     Ctx.moveTo(0,0);
     Ctx.lineTo(0,100);
     Ctx.lineTo(100,100);
@@ -55,6 +56,7 @@
 
     Ctx.beginPath()
     Ctx.strokeStyle="#00FF00";
+    Ctx.lineWidth = 7;
     Ctx.moveTo(200,200);
     Ctx.lineTo(200,300);
     Ctx.lineTo(300,400);
