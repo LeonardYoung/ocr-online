@@ -1,0 +1,5 @@
+#由于PaddleHub升级比较快，建议大家直接升级到最新版本的PaddleHub，无需指定版本升级
+!pip install paddlehub --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple 
+#该Module依赖于第三方库shapely、pyclipper，使用该Module之前，请先安装shapely、pyclipper
+!pip install shapely -i https://pypi.tuna.tsinghua.edu.cn/simple 
+!pip install pyclipper -i https://pypi.tuna.tsinghua.edu.cn/simple 
