@@ -315,6 +315,7 @@
                 console.log('uid=',uid)
                 this.previewVisible = 1;
                 this.resultShow = 1;
+                this.textClickIndex = -1;
                 this.message = '服务器处理中，请稍后查询'
                 this.ocrResult = null;
 

@@ -31,8 +31,8 @@ if useDB:
     cursor = conn.cursor()  # 获取一个连接对象
 
 # 新开一个进程，运行OCR算法
-# run_ocr.run_ocr('mobile')
-run_ocr.run_ocr('server')
+run_ocr.run_ocr('mobile')
+# run_ocr.run_ocr('server')
 
 # 开启Flask
 app = Flask(__name__)
