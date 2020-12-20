@@ -120,6 +120,18 @@ export default {
       uploadURL: "api/post/picture",
     };
   },
+  watch:{
+    typeSelect: function(val){
+      // console.log('val=',val)
+      if(val === "1"){
+        this.uploadURL = "api/post/picture";
+      }
+      else if(val === "2"){
+        this.uploadURL = "api/post/table"
+      }
+      this.previewImage = ""
+    }
+  },
   methods: {
     // 上传文件前的钩子,预处理
     beforeUpload(file) {

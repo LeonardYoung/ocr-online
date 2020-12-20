@@ -1,13 +1,13 @@
 <template>
     <div>
         <a-row type="flex" justify="space-around">
-            <a-col span="11">
+            <a-col span="13">
                 <a-divider >
-                    <p class="subtitle">图片预览</p>
+                    <p class="subtitle">表格预览</p>
                 </a-divider>
                 <div  class="preview-box">
                     <template v-if="!previewVisible">
-                        <p class="message-info">请点击上传按钮上传图片</p>
+                        <p class="message-info">请点击上传按钮上传表格</p>
                     </template>
                     <p class="img-con"
                        @mousedown="onMouseDown"
@@ -20,12 +20,12 @@
 
 
             </a-col>
-            <a-col span="11">
+            <a-col span="9">
                 <a-divider >
-                    <p class="subtitle">文字识别结果</p>
+                    <p class="subtitle">表格识别结果</p>
                 </a-divider>
                 <div v-if="resultShow===0" class="result-box">
-                    <p class="message-info">请选择一张图片查看识别结果</p>
+                    <p class="message-info">请选择一张表格查看识别结果</p>
                 </div>
                 <div v-else-if="resultShow===1" class="result-box">
                     <!-- <div class="spin-root"> -->
@@ -38,8 +38,8 @@
                 </div>
                 <div v-else-if="resultShow===2" class="result-box"  v-bind:style="{ minHeight: 600 + 'px' }">
                     <ul>
-                        <li class="res-text" v-for="(line,index) in ocrResult.ocr_data" v-bind:key="index" v-on:click="onTextResultClick(index)">
-                            {{ line.text }}
+                        <li class="res-text" v-for="(value, keyName) in tableResult" v-bind:key="keyName" v-on:click="onTextResultClick(index)">
+                            {{keyName}}:{{ value }}
                         </li>
                     </ul>
                 </div>
@@ -51,7 +51,7 @@
 <script>
     import { message } from 'ant-design-vue';
     export default {
-        name: "resultPresentText",
+        name: "resultTable",
         props: ['previewImage','axiosResult'],
 
         data(){
@@ -59,7 +59,7 @@
                 resultShow : 0,
                 message : "服务器处理中，请稍后查询",
                 previewVisible : false,
-                ocrResult:{},
+                tableResult:{},
                 textClickIndex:-1,
                
 
@@ -78,7 +78,6 @@
 
                 defaultColor: '#0000FF',
                 hightLightColor: '#FF0000',
-                // oCanvas:{}
             }
         },
         watch: {
@@ -99,11 +98,16 @@
 
                     // 服务器处理完成，展示结果
                     this.resultShow = 2;
-                    this.ocrResult = result.data.result
+                    const res = result.data.result
+
+                    if('dtime' in res ){
+                        let dtime = res.dtime.toFixed(2);//  toFixed(this.tableResult.dtime);
+                        message.info('该图片识别用时：'+ dtime+' s');
+                    }
+                    this.tableResult = JSON.parse(res.table_data);
+                    
+                    console.log(this.tableResult)
                    
-                    let dtime = this.ocrResult.dtime.toFixed(2);//  toFixed(this.ocrResult.dtime);
-                    // console.log(dtime)
-                    message.info('该图片识别用时：'+ dtime+' s');
                     // 模板渲染完成后执行，否则paintResult中会报错找不到canvas
                     const that = this;
                     this.$nextTick(()=>{
@@ -120,6 +124,7 @@
 
         methods:{
 
+            
             /**
              * @description: 监听识别文字点击事件。点击后重新绘制矩形框，且高亮选中文本。
              * @param {*} index
@@ -158,23 +163,23 @@
              */
             paintResult(){
                 
-                let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
-                this.clearCanvas();
+                // let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
+                // this.clearCanvas();
 
-                // 绘制矩形
-                Ctx.beginPath();
-                for(let one of this.ocrResult.ocr_data){
-                    this.paintRectangle(Ctx,this.pointConvert(one.text_box_position),this.defaultColor,1);
-                }
-                Ctx.closePath();
+                // // 绘制矩形
+                // Ctx.beginPath();
+                // for(let one of this.tableResult.ocr_data){
+                //     this.paintRectangle(Ctx,this.pointConvert(one.text_box_position),this.defaultColor,1);
+                // }
+                // Ctx.closePath();
 
-                // 绘制高亮状态
-                if(this.textClickIndex !== -1){
-                    Ctx.beginPath();
-                    this.paintRectangle(Ctx,this.pointConvert(this.ocrResult.ocr_data[this.textClickIndex].text_box_position),
-                    this.hightLightColor,3);
-                    Ctx.closePath();
-                }
+                // // 绘制高亮状态
+                // if(this.textClickIndex !== -1){
+                //     Ctx.beginPath();
+                //     this.paintRectangle(Ctx,this.pointConvert(this.tableResult.ocr_data[this.textClickIndex].text_box_position),
+                //     this.hightLightColor,3);
+                //     Ctx.closePath();
+                // }
                 
             },
             /**
@@ -317,19 +322,19 @@
                 console.log('uid=',uid)
                 this.previewVisible = 1;
                 this.resultShow = 1;
-                this.textClickIndex = -1;
+                // this.textClickIndex = -1;
                 this.message = '服务器处理中，请稍后查询'
-                this.ocrResult = null;
+                this.tableResult = null;
 
                 
-                this.clearCanvas();
+                // this.clearCanvas();
                 const that = this;
 
                 // 必须下一次tick执行，否则图片不会更新
                 this.$nextTick(()=>{
                     that.pictureInit().then(()=>{
                         that.wheelInit();
-                        that.canvasSizeFollow();
+                        // that.canvasSizeFollow();
                     })
                     
                 })
@@ -508,18 +513,13 @@
         font-size: 1rem;
         line-height: 1rem;
         list-style: none;
-        /* box-sizing:border-box; */
         border: 2px solid grey;
-        /* text-align: left; */
-        /* alignment: left; */
-        /*display: inline;*/
-        /*display: inline-block;*/
     }
-    li:hover{
+    /* li:hover{
         color: red;
         border: 2px solid red;
         cursor:pointer;
     }
-    
+     */
 
 </style>
