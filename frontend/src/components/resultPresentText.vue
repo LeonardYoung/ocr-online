@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @mouseup="allMouseUp">
         <a-row type="flex" justify="space-around">
             <a-col span="11">
                 <a-divider >
@@ -59,7 +59,9 @@
                 resultShow : 0,
                 message : "服务器处理中，请稍后查询",
                 previewVisible : false,
-                ocrResult:{},
+                ocrResult:{
+                    ocr_data: [],
+                },
                 textClickIndex:-1,
                
 
@@ -97,9 +99,19 @@
                 }
                 else if(result.data.status === 1){
 
+                    
+                    this.ocrResult = result.data.result
+
+                    if(this.ocrResult.error){
+                        message.info('图片识别异常')
+                        // 防止渲染报错
+                        this.ocrResult = {
+                            ocr_data: [],
+                        }
+                        return;
+                    }
                     // 服务器处理完成，展示结果
                     this.resultShow = 2;
-                    this.ocrResult = result.data.result
                    
                     let dtime = this.ocrResult.dtime.toFixed(2);//  toFixed(this.ocrResult.dtime);
                     // console.log(dtime)
@@ -243,7 +255,9 @@
                     that.canvasSizeFollow();
                     const _this = that;
                     that.$nextTick(()=>{
-                        _this.paintResult();
+                        if(_this.axiosResult.data){
+                            _this.paintResult();
+                        }
                     })
                     
                 });
@@ -319,7 +333,9 @@
                 this.resultShow = 1;
                 this.textClickIndex = -1;
                 this.message = '服务器处理中，请稍后查询'
-                this.ocrResult = null;
+                this.ocrResult = {
+                    ocr_data:[]
+                };
 
                 
                 this.clearCanvas();
@@ -363,9 +379,6 @@
                     }
                 }
                 return {top: _t, left: _l};
-            },
-            onMounseUp(){
-              this.isdrag = false;
             },
             fnWheel(obj, fncc) {
                 obj.onmousewheel = fn;
@@ -420,7 +433,12 @@
                     return false;
                 }
             },
-
+            onMounseUp(){
+                this.isdrag = false;
+            },
+            allMouseUp(){
+                this.isdrag = false;
+            },
             onMouseDown(e) {
                 // let oDragHandle = e.target;
                 // let topElement = "HTML";

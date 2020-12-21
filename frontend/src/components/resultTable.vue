@@ -1,13 +1,13 @@
 <template>
-    <div>
+    <div @mouseup="allMouseUp">
         <a-row type="flex" justify="space-around">
             <a-col span="13">
                 <a-divider >
-                    <p class="subtitle">表格预览</p>
+                    <p class="subtitle">工单预览</p>
                 </a-divider>
                 <div  class="preview-box">
                     <template v-if="!previewVisible">
-                        <p class="message-info">请点击上传按钮上传表格</p>
+                        <p class="message-info">请点击上传按钮上传工单</p>
                     </template>
                     <p class="img-con"
                        @mousedown="onMouseDown"
@@ -22,10 +22,10 @@
             </a-col>
             <a-col span="9">
                 <a-divider >
-                    <p class="subtitle">表格识别结果</p>
+                    <p class="subtitle">工单识别结果</p>
                 </a-divider>
                 <div v-if="resultShow===0" class="result-box">
-                    <p class="message-info">请选择一张表格查看识别结果</p>
+                    <p class="message-info">请选择一张工单查看识别结果</p>
                 </div>
                 <div v-else-if="resultShow===1" class="result-box">
                     <!-- <div class="spin-root"> -->
@@ -38,7 +38,7 @@
                 </div>
                 <div v-else-if="resultShow===2" class="result-box"  v-bind:style="{ minHeight: 600 + 'px' }">
                     <ul>
-                        <li class="res-text" v-for="(value, keyName) in tableResult" v-bind:key="keyName" v-on:click="onTextResultClick(index)">
+                        <li class="res-text" v-for="(value, keyName) in tableResult" v-bind:key="keyName" v-on:click="onTextResultClick(keyName)">
                             {{keyName}}:{{ value }}
                         </li>
                     </ul>
@@ -96,13 +96,20 @@
                 }
                 else if(result.data.status === 1){
 
+
+                    
+                    const res = result.data.result
+
+                    if(res.error){
+                        message.info('工单识别异常')
+                        return;
+                    }
                     // 服务器处理完成，展示结果
                     this.resultShow = 2;
-                    const res = result.data.result
 
                     if('dtime' in res ){
                         let dtime = res.dtime.toFixed(2);//  toFixed(this.tableResult.dtime);
-                        message.info('该图片识别用时：'+ dtime+' s');
+                        message.info('该工单识别用时：'+ dtime+' s');
                     }
                     this.tableResult = JSON.parse(res.table_data);
                     
@@ -123,6 +130,7 @@
 
 
         methods:{
+            
 
             
             /**
@@ -369,8 +377,12 @@
                 }
                 return {top: _t, left: _l};
             },
+
+            allMouseUp(){
+                this.isdrag = false;
+            },
             onMounseUp(){
-              this.isdrag = false;
+                this.isdrag = false;
             },
             fnWheel(obj, fncc) {
                 obj.onmousewheel = fn;

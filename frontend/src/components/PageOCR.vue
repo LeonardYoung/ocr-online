@@ -16,8 +16,7 @@
           list-type="picture"
           @preview="handlePreview"
           @change="handleChange"
-          :file-list="fileList"
-          :before-upload="beforeUpload"
+          :file-list="bindFileList"
           accept=".png,.jpg"
         >
           <a-button type="primary" class="upload-button">
@@ -36,7 +35,7 @@
           <a-col flex="300px">
             <a-radio-group v-model="typeSelect" button-style="solid">
               <a-radio-button value="1"> 文字识别 </a-radio-button>
-              <a-radio-button value="2"> 表格识别 </a-radio-button>
+              <a-radio-button value="2"> 工单识别 </a-radio-button>
             </a-radio-group>
 
           </a-col>
@@ -106,7 +105,7 @@ export default {
       //
     //   presentSelect: "3",
       previewImage: "",
-      fileList: [
+      ocrFileList: [
         // {
         //     uid: '-1',
         //     uuid:'222',
@@ -115,6 +114,8 @@ export default {
         //     url: 'https://yangsj-first-bucket.oss-cn-guangzhou.aliyuncs.com/markdown/image-20201108101940476.png',
         // },
       ],
+      tableFileList: [],
+      bindFileList: [],
       axiosResult: {},
       // uploadURL:window.serverConfig.domain + 'api/post/picture'
       uploadURL: "api/post/picture",
@@ -125,57 +126,17 @@ export default {
       // console.log('val=',val)
       if(val === "1"){
         this.uploadURL = "api/post/picture";
+        this.bindFileList = this.ocrFileList;
       }
       else if(val === "2"){
-        this.uploadURL = "api/post/table"
+        this.uploadURL = "api/post/table";
+        this.bindFileList = this.tableFileList;
       }
       this.previewImage = ""
     }
   },
   methods: {
-    // 上传文件前的钩子,预处理
-    beforeUpload(file) {
-      console.log(file, "file:");
 
-      //--------判断文件类型和文件大小
-      // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-      // if (!isJpgOrPng) {
-      //     message.error('You can only upload JPG/PNG file!');
-      //     // return false
-      // }
-      // const isLt2M = file.size / 1024 / 1024 < 2;
-      // if (!isLt2M) {
-      //     message.error('Image must smaller than 2MB!');
-      // }
-      // console.log(this.fileList,'beforeUpload')
-      // this.badFileType = !(isJpgOrPng && isLt2M)
-      //----------------手动上传文件
-      // let that = this
-      //
-      // let data = new FormData()  // 创建form对象
-      // data.append('pic', file)  // 通过append向form对象添加数据
-      // axios({
-      //     url:'/post/picture',
-      //     method:'post',
-      //     headers: {
-      //         'Content-Type': 'application/x-www-form-urlencoded'
-      //     },
-      //     data:data
-      // })
-      // .then(res=>{
-      //     console.log(res.data)
-      //     message.info('success')
-      //
-      //     // that.fileMapUid.set(file.uid,res.data)
-      //     that.fileList.forEach(f=>{
-      //         if(f.uid === file.uid){
-      //             f.uuid = res.data
-      //         }
-      //     })
-      // })
-      //
-      // return false;
-    },
     //查询该图片识别结果
 
     getResultFromHost(uuid) {
@@ -206,13 +167,18 @@ export default {
     },
     //文件状态改变的钩子
     handleChange({ file, fileList }) {
-      // console.log('change!!!!')
-      this.fileList = fileList;
-      // console.log(fileList)
+      if(this.typeSelect === "1"){
+        this.ocrFileList = fileList;
+        this.bindFileList = this.ocrFileList
+      }
+      else if( this.typeSelect === "2"){
+        this.tableFileList = fileList;
+        this.bindFileList = this.tableFileList;
+      }
       if (file.status === "done") {
         message.info("上传成功");
         // console.log(file,'done')
-        this.fileList.forEach((f) => {
+        this.bindFileList.forEach((f) => {
           if (f.uid === file.uid) {
             f.uuid = file.response;
           }
@@ -229,7 +195,9 @@ export default {
       this.drawerVisible = false;
     },
   },
-  mounted() {},
+  mounted() {
+    this.bindFileList = this.ocrFileList;
+  },
 };
 </script>
 
