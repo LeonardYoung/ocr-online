@@ -59,12 +59,14 @@
           ref="childResultPresent"
           :preview-image="previewImage"
           :axios-result="axiosResult"
+          class="present-box"
         />
         <result-table
           v-else-if="this.typeSelect === '2'"
           ref="childResultPresent"
           :preview-image="previewImage"
           :axios-result="axiosResult"
+          class="present-box"
         />
         <!--                <result-present-text v-else-if="this.presentSelect==='3' " />-->
       </a-layout-content>
@@ -224,6 +226,9 @@ h1 {
 }
 .uploader {
   overflow-y: scroll;
+  height: 100%;
+}
+.present-box{
   height: 100%;
 }
 </style>
