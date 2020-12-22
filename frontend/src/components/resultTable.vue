@@ -64,10 +64,8 @@
               </a-row>
 
             </li>
-            <li v-for="(value, keyName) in longResult" :key="keyName">
-                <strong style="display:list-item">{{ keyName }}</strong>
-                <!-- {{ keyName }} -->
-                <br/>
+            <li class="table-extra" v-for="(value, keyName) in longResult" :key="keyName" >
+                <strong style="margin:0 auto">{{ keyName }}</strong>
                 {{ value }}
             </li>
             
@@ -565,6 +563,11 @@ li {
   /* text-align: left; */
   display: flex;
   /* justify-content: space-around; */
+}
+.table-extra{
+    display: flex;
+    flex-direction:column;
+    text-align: left;
 }
 /* span:nth-child(1){
         background-color: white;
