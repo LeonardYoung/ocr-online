@@ -2,13 +2,6 @@
   <a-layout>
     <a-layout-sider width="250" theme="light">
       <div class="uploader">
-        <!-- <a-upload
-          :file-list="fileList"
-        >
-          <a-button type="primary">
-            <a-icon type="upload"></a-icon>上
-          </a-button>
-        </a-upload> -->
         <a-upload
           name="pic"
           :action="uploadURL"
@@ -27,33 +20,35 @@
     </a-layout-sider>
     <a-layout>
       <a-layout-header class="header">
-        <a-row type="flex">
-          <a-col flex="auto">
-            <h1>在线演示系统</h1>
-          </a-col>
-
-          <a-col flex="300px">
-            <a-radio-group v-model="typeSelect" button-style="solid">
-              <a-radio-button value="1"> 文字识别 </a-radio-button>
-              <a-radio-button value="2"> 工单识别 </a-radio-button>
+        <div class="title">
+          <h1>在线演示系统</h1>
+        </div>
+        <div class="toolbar-right">
+          <a-button v-if="this.typeSelect === '2'" @click="showDrawer">
+            设置
+          </a-button>
+          <a-radio-group v-model="typeSelect" button-style="solid">
+            <a-radio-button value="2"> 工单识别 </a-radio-button>
+            <a-radio-button value="1"> 文字识别 </a-radio-button>
+          </a-radio-group>
+          <a-drawer
+            title="选择工单"
+            placement="right"
+            :closable="false"
+            :visible="drawerVisible"
+            @close="closeDrawer"
+            width=400
+          >
+            <a-radio-group v-model="tableSelect" @change="onTableChange">
+              <a-radio class="vertical-radio" :value="1">福州供电公司现场工作任务派工单</a-radio>
+              <a-radio class="vertical-radio" :value="2">福州供电公司现场工作任务派工单</a-radio>
+              <a-radio class="vertical-radio" :value="3">福州供电公司现场工作任务派工单</a-radio>
+              
             </a-radio-group>
-
-          </a-col>
-        </a-row>
+          </a-drawer>
+        </div>
       </a-layout-header>
       <a-layout-content class="content">
-        <!-- <resultTextOnly
-          v-if="this.presentSelect === '1'"
-          ref="childResultPresent"
-          :preview-image="previewImage"
-          :axios-result="axiosResult"
-        />
-        <ResultPresent
-          v-else-if="this.presentSelect === '2'"
-          ref="childResultPresent"
-          :preview-image="previewImage"
-          :axios-result="axiosResult"
-        /> -->
         <result-present-text
           v-if="this.typeSelect === '1'"
           ref="childResultPresent"
@@ -68,7 +63,6 @@
           :axios-result="axiosResult"
           class="present-box"
         />
-        <!--                <result-present-text v-else-if="this.presentSelect==='3' " />-->
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -77,7 +71,7 @@
 <script>
 import resultPresentText from "./resultPresentText";
 import { message } from "ant-design-vue";
-import resultTable from './resultTable.vue';
+import resultTable from "./resultTable.vue";
 
 const axios = require("axios");
 function getBase64(file) {
@@ -103,42 +97,35 @@ export default {
       drawerVisible: false,
       remainNum: 0,
       previewVisible: false,
-      typeSelect:"1",    // 选择“文字识别”或者“表格识别”
-      //
-    //   presentSelect: "3",
+      typeSelect: "1", // 选择“文字识别”或者“表格识别”
+      tableSelect: 1,
       previewImage: "",
-      ocrFileList: [
-        // {
-        //     uid: '-1',
-        //     uuid:'222',
-        //     name: 'image.png',
-        //     status: 'done',
-        //     url: 'https://yangsj-first-bucket.oss-cn-guangzhou.aliyuncs.com/markdown/image-20201108101940476.png',
-        // },
-      ],
+      ocrFileList: [],
       tableFileList: [],
       bindFileList: [],
       axiosResult: {},
       // uploadURL:window.serverConfig.domain + 'api/post/picture'
       uploadURL: "api/post/picture",
+
     };
   },
-  watch:{
-    typeSelect: function(val){
+  watch: {
+    typeSelect: function (val) {
       // console.log('val=',val)
-      if(val === "1"){
+      if (val === "1") {
         this.uploadURL = "api/post/picture";
         this.bindFileList = this.ocrFileList;
-      }
-      else if(val === "2"){
+      } else if (val === "2") {
         this.uploadURL = "api/post/table";
         this.bindFileList = this.tableFileList;
       }
-      this.previewImage = ""
-    }
+      this.previewImage = "";
+    },
   },
   methods: {
-
+    onTableChange(){
+      console.log(this.tableSelect);
+    },
     //查询该图片识别结果
 
     getResultFromHost(uuid) {
@@ -169,11 +156,10 @@ export default {
     },
     //文件状态改变的钩子
     handleChange({ file, fileList }) {
-      if(this.typeSelect === "1"){
+      if (this.typeSelect === "1") {
         this.ocrFileList = fileList;
-        this.bindFileList = this.ocrFileList
-      }
-      else if( this.typeSelect === "2"){
+        this.bindFileList = this.ocrFileList;
+      } else if (this.typeSelect === "2") {
         this.tableFileList = fileList;
         this.bindFileList = this.tableFileList;
       }
@@ -220,6 +206,7 @@ h1 {
   /* background-image: url('/bg3.gif'); */
   height: 10%;
   overflow: hidden;
+  position: relative;
 }
 .upload-button {
   margin-top: 30px;
@@ -228,7 +215,27 @@ h1 {
   overflow-y: scroll;
   height: 100%;
 }
-.present-box{
+.present-box {
   height: 100%;
+}
+.title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.toolbar-right {
+  float: right;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.vertical-radio{
+  display: block;
+  font-size: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+  margin: 1rem 0;
+        
 }
 </style>
