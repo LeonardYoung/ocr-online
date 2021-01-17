@@ -1,40 +1,43 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-12-06 15:50:28
+ * @LastEditTime: 2021-01-16 21:09:58
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \frontend\src\App.vue
+-->
 <template>
   <div id="app">
-<!--    <img alt="Vue logo" src="./assets/logo.png">-->
-<!--    <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-    <PageOCR class="page-ocr"/>
+    <transition name="fade">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
-<script>
-// import HelloWorld from './components/HelloWorld.vue'
-import PageOCR from "./components/PageOCR";
-
-export default {
-  name: 'App',
-  components: {
-    PageOCR,
-    // HelloWorld
-  }
-}
-</script>
-
 <style>
+html{
+  font-size: 16px;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  /*margin-top: 60px;*/
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
-html{
-    font-size: 20px;
+
+#nav {
+  padding: 30px;
 }
-    .page-ocr{
-        width: 100%;
-        height: 100%;
-    }
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
+}
 </style>
