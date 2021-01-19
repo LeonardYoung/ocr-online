@@ -11,6 +11,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import TextOCR from '../views/TextOCR.vue'
 import TableOCR from '../views/TableOCR.vue'
+import PageOCR from "../components/PageOCR";
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,11 @@ const routes = [
   {
     path: '/tableOCR',
     component: TableOCR
+  },
+  {
+    path: '/pageOCR',
+    name:'pageOCR',
+    component: PageOCR
   },
   // {
   //   path: '/about',

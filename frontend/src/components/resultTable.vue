@@ -1,7 +1,7 @@
 <template>
   <div @mouseup="allMouseUp">
     <a-row type="flex" justify="space-around">
-      <a-col span="13">
+      <a-col span="11">
         <a-divider>
           <p class="subtitle">工单预览</p>
         </a-divider>
@@ -19,7 +19,7 @@
           </p>
         </div>
       </a-col>
-      <a-col span="9">
+      <a-col span="11">
         <a-divider>
           <p class="subtitle">工单识别结果</p>
         </a-divider>
@@ -45,30 +45,65 @@
               v-if="tableName !== ''"
             >
             <strong style="margin:0 auto">{{ tableName }}</strong>
-              
+
             </li>
             <li
-              class="res-text"
+
               v-for="(value, keyName) in tableResult"
+              :class="{'longresult':resultItemType(value) === 'long','nestresult':resultItemType(value) === 'nest' || resultItemType(value) === 'nestTwice'}"
               v-bind:key="keyName"
               v-on:click="onTextResultClick(keyName)"
             >
-              <a-row type="flex" justify="space-around" style="width: 100%">
-                <a-col :span="9">
-                    <strong>{{ keyName }}</strong>
-                  
-                </a-col>
-                <a-col :span="10">
-                  {{ value }}
-                </a-col>
-              </a-row>
+              <template v-if="resultItemType(value) === 'normal'">
+
+
+                <a-row type="flex" justify="space-around" style="width: 100%">
+                  <a-col :span="9">
+                      <strong>{{ keyName }}</strong>
+
+                  </a-col>
+                  <a-col :span="10">
+                    {{ value }}
+                  </a-col>
+                </a-row>
+              </template>
+              <template v-if="resultItemType(value) === 'long'">
+                <strong style="margin:0 auto;margin-bottom:1rem">{{ keyName }}</strong>
+                {{ value }}
+              </template>
+
+              <template v-if="resultItemType(value) === 'nest'">
+                <strong style="margin:0 auto">{{ keyName }}</strong>
+                <a-row v-for="item in value" :key="item[0]" type="flex" justify="space-around" style="width: 100%;margin-top:1rem">
+                  <a-col :span="9">
+                    <strong>{{ item[0] }}</strong>
+
+                  </a-col>
+                  <a-col :span="10">
+                    {{ item[1] }}
+                  </a-col>
+                </a-row>
+              </template>
+
+              <template v-if="resultItemType(value) === 'nestTwice'">
+                <strong style="margin:0 auto">{{ keyName }}</strong>
+                <a-row v-for="item in value" :key="item[0]" type="flex" justify="space-around" style="width: 100%;margin-top:1rem">
+                  <a-col :span="9">
+                    <strong>{{ item[0] }}</strong>
+
+                  </a-col>
+                  <a-col :span="10">
+                    {{ item[1] }}
+                  </a-col>
+                </a-row>
+              </template>
 
             </li>
             <li class="table-extra" v-for="(value, keyName) in longResult" :key="keyName" >
                 <strong style="margin:0 auto">{{ keyName }}</strong>
                 {{ value }}
             </li>
-            
+
           </ul>
         </div>
       </a-col>
@@ -116,6 +151,7 @@ export default {
      * @return {*}
      */
     axiosResult: function (result) {
+      console.log('-------')
       console.log(result);
 
       //队列中
@@ -141,17 +177,38 @@ export default {
         console.log(this.tableResult);
         this.extraHandleResult();
 
-        // 模板渲染完成后执行，否则paintResult中会报错找不到canvas
-        const that = this;
-        this.$nextTick(() => {
-          that.paintResult();
-        });
+
       }
     },
   },
   mounted() {},
 
   methods: {
+
+    chooseAnotherTable() {
+      console.log('chooseAnotherTables')
+      this.previewVisible = 1;
+      this.resultShow = 1;
+      this.message = "服务器处理中，请稍后查询";
+      this.tableName = "";
+
+    },
+
+    resultItemType(item){
+      if(typeof(item) === 'string'){
+        // 太长的项目需要换行显示
+        if( item.length > 50){
+          return 'long';
+        }
+        return 'normal'
+      }
+      if(typeof(item) === 'object'){
+        if(typeof(item[0][0]) === 'object'){
+          return 'nestTwice'
+        }
+        return 'nest'
+      }
+    },
 
       /**
      * @description: 对表格识别结果进行特殊处理
@@ -165,13 +222,13 @@ export default {
         delete this.tableResult["表名"];
         // this.tableResult.
       }
-      // 太长的项目需要换行显示
-      for ( let item in this.tableResult){
-          if(this.tableResult[item].length > 50){
-              this.longResult[item] = this.tableResult[item];
-              delete this.tableResult[item]
-          }
-      }
+
+      // for ( let item in this.tableResult){
+      //     if(this.tableResult[item].length > 50){
+      //         this.longResult[item] = this.tableResult[item];
+      //         delete this.tableResult[item]
+      //     }
+      // }
     },
 
     /**
@@ -361,13 +418,8 @@ export default {
      */
     pictureClicked(uid) {
       console.log("uid=", uid);
-      this.previewVisible = 1;
-      this.resultShow = 1;
-      // this.textClickIndex = -1;
-      this.message = "服务器处理中，请稍后查询";
-      this.tableName = "";
-      this.tableResult = null;
 
+      // this.tableResult = null;
       // this.clearCanvas();
       const that = this;
 
@@ -540,7 +592,7 @@ canvas {
 .table-header{
     font-size: 1.5rem;
     line-height: 1.5rem;
-    
+
 }
 ul {
   position: absolute;
@@ -564,21 +616,14 @@ li {
   display: flex;
   /* justify-content: space-around; */
 }
-.table-extra{
+.longresult{
     display: flex;
     flex-direction:column;
     text-align: left;
 }
-/* span:nth-child(1){
-        background-color: white;
-    }
-    span:nth-child(3){
-        background-color: red;
-    } */
-/* li:hover{
-        color: red;
-        border: 2px solid red;
-        cursor:pointer;
-    }
-     */
+  .nestresult{
+    display: flex;
+    flex-direction:column;
+    text-align: left;
+  }
 </style>

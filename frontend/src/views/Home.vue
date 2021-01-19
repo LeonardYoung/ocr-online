@@ -17,9 +17,9 @@
     </div> -->
 
     <div class="btns">
-      <a-button @click="clickA" size="large" type="primary">文字</a-button>
+      <a-button @click="clickA" size="large" type="primary">文字识别在线演示</a-button>
       <br/>
-      <a-button @click="clickB" size="large" type="primary">工单</a-button>
+      <a-button @click="clickB" size="large" type="primary">工单识别在线演示</a-button>
     </div>
   </div>
 
@@ -30,6 +30,7 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 // import HomeLeft from '../views/HomeLeft'
+// import PageOCR from '@/components/PageOCR'
 
 export default {
   name: "Home",
@@ -38,10 +39,12 @@ export default {
   },
   methods: {
     clickA() {
-      this.$router.push({ path: "textOCR" });
+      const type = '1';
+      this.$router.push({ path: "/pageOCR" , query: { type:type }});
     },
     clickB() {
-      this.$router.push({ path: "tableOCR" });
+      const type = '2';
+      this.$router.push({ path: "/pageOCR" ,query: { type:type }});
     },
   },
 };
@@ -50,6 +53,7 @@ export default {
 .container {
   width: 100%;
   height: 100%;
+  background-image: url("/bg5.jpg");
 }
 button {
   margin: 3rem  auto;
@@ -63,6 +67,6 @@ button {
   width: 100%;
   text-align: center;
   transform: translateY(-50%);
-  
+
 }
 </style>

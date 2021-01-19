@@ -1,169 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
+<HTML>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-    <style>
-        .dragAble {
-            position: relative;
-            /*cursor: move;*/
-            cursor: grab;
-            /*top: 100px;*/
-            /*left: 300px;*/
+<!--    <script type="text/javascript" src="script/jquery-1.6.2.min.js"></script>-->
+<!--    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>-->
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+
+    <script type='text/javascript'>
+        function selectFile() {
+            //触发 文件选择的click事件
+            $("#file").trigger("click");
+
+            //其他code如 alert($("#file").attr("value"))
         }
 
-        .img-con {
-            position: relative;
-            width: 713px;
-            height: 455px;
-            overflow: hidden;
-            border: 1px solid red;
-            background-color: grey;
+        /* 获取 文件的路径 ，用于测试*/
+        function getFilePath() {
+            alert($("#file").attr("value"));
         }
-        .father{
-            position: relative;
-            top: 100px;
-            left: 900px;
-            display: none;
-        }
-        .painter{
-            width: 500px;
-            height: 500px;
-            border: 2px solid grey;
-        }
-    </style>
+    </script>
 </head>
 
 <body>
-<div class="father">
-    <p class="img-con"><img src="https://yangsj-first-bucket.oss-cn-guangzhou.aliyuncs.com/markdown/image-20201126204016674.png" class="dragAble" /></p>
-</div>
-<div class="painter">
-    <canvas height="500" width="500"></canvas>
-</div>
-<script type="text/javascript" charset="utf-8">
-    let Ctx = document.getElementsByTagName('canvas')[0].getContext("2d");
-    Ctx.beginPath()
-    Ctx.strokeStyle="#FF0000";
-    Ctx.lineWidth = 1;
-    Ctx.moveTo(0,0);
-    Ctx.lineTo(0,100);
-    Ctx.lineTo(100,100);
-    Ctx.lineTo(100,0);
-    Ctx.lineTo(0,0);
-    Ctx.stroke();
-    Ctx.closePath();
-
-    Ctx.beginPath()
-    Ctx.strokeStyle="#00FF00";
-    Ctx.lineWidth = 7;
-    Ctx.moveTo(200,200);
-    Ctx.lineTo(200,300);
-    Ctx.lineTo(300,400);
-    Ctx.lineTo(400,200);
-    Ctx.lineTo(200,200);
-    Ctx.stroke();
-    Ctx.closePath();
-
-
-    window.onload = function() {
-            let oImg = document.getElementsByTagName("img")[0];
-            function fnWheel(obj, fncc) {
-                obj.onmousewheel = fn;
-                if (obj.addEventListener) {
-                    obj.addEventListener('DOMMouseScroll', fn, false);
-                }
-
-                function fn(ev) {
-                    let oEvent = ev ;
-                    // console.log(oEvent)
-                    let down = true;
-
-                    if (oEvent.detail) {
-                        down = oEvent.detail > 0
-                    } else {
-                        down = oEvent.wheelDelta < 0
-                    }
-                    console.log(down)
-
-                    if (fncc) {
-                        fncc.call(this, down, oEvent);
-                    }
-
-                    if (oEvent.preventDefault) {
-                        oEvent.preventDefault();
-                    }
-
-                    return false;
-                }
-
-
-            };
-            fnWheel(oImg, function(down, oEvent) {
-
-                let oldWidth = oImg.offsetWidth;
-                let oldHeight = oImg.offsetHeight;
-                let oldLeft = oImg.offsetLeft;
-                let oldTop = oImg.offsetTop;
-
-                let scaleX = (oEvent.clientX - oldLeft) / oldWidth; //比例
-                let scaleY = (oEvent.clientY - oldTop) / oldHeight;
-
-                if (down) {
-                    oImg.style.width = oImg.offsetWidth * 0.9 + "px";
-                    oImg.style.height = oImg.offsetHeight * 0.9 + "px";
-                } else {
-                    oImg.style.width = oImg.offsetWidth * 1.1 + "px";
-                    oImg.style.height = oImg.offsetHeight * 1.1 + "px";
-                }
-
-                let newWidth = oImg.offsetWidth;
-                let newHeight = oImg.offsetHeight;
-
-                oImg.style.left = "0px";
-                oImg.style.top = "0px";
-                // oImg.style.left = oldLeft - scaleX * (newWidth - oldWidth) + "px";
-                // oImg.style.top = oldTop - scaleY * (newHeight - oldHeight) + "px";
-            });
-        }
-
-    //拖拽
-    // var ie = document.all;
-    // var nn6 = document.getElementByIdx && !document.all;
-    var isdrag = false;
-    var y, x;
-    var oDragObj;
-
-    function moveMouse(e) {
-        if (isdrag) {
-            // console.log(e)
-            oDragObj.style.top = (nTY + e.clientY - y) + "px";
-            oDragObj.style.left = (nTX + e.clientX - x) + "px";
-            return false;
-        }
-    }
-
-    function initDrag(e) {
-        let oDragHandle = e.target;
-        // console.log(oDragHandle)
-        let topElement = "HTML";
-        while (oDragHandle.tagName !== topElement && oDragHandle.className !== "dragAble") {
-            oDragHandle = oDragHandle.parentElement;
-        }
-        if (oDragHandle.className === "dragAble") {
-            isdrag = true;
-            oDragObj = oDragHandle;
-            nTY = parseInt(oDragObj.style.top + 0);
-            y = e.clientY;
-            nTX = parseInt(oDragObj.style.left + 0);
-            x = e.clientX;
-            document.onmousemove = moveMouse;
-            return false;
-        }
-    }
-    document.onmousedown = initDrag;
-    document.onmouseup = new Function("isdrag=false");
-</script>
+    <!-- 给这个input 设置样式隐藏，切忌不可用display控制隐藏,可能不能跨浏览器 -->
+    <input type="file" id="file" multiple="multiple" οnchange="getFilePath()" />
+    <button οnclick="selectFile();">select file</button>
+    <button οnclick="getFilePath()">get FilePath</button>
 </body>
 
 </html>
