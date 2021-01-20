@@ -122,23 +122,6 @@ function dataURLtoBlob(dataurl) {
   }
   return new Blob([u8arr], { type: mime });
 }
-/*
- * 将base64转换成可用formdata提交的文件
- * @param {string} urlData base64的url
- * @return {Blob}
- */
-// function convertBase64UrlToBlob(urlData){
-//   //去掉url的头，并转换为byte
-//   var split = urlData.split(',');
-//   var bytes=window.atob(split[1]);
-//   //处理异常,将ascii码小于0的转换为大于0
-//   var ab = new ArrayBuffer(bytes.length);
-//   var ia = new Uint8Array(ab);
-//   for (var i = 0; i < bytes.length; i++) {
-//     ia[i] = bytes.charCodeAt(i);
-//   }
-//   return new Blob( [ab] , {type : split[0]});
-// }
 
 export default {
   name: "PageOCR",
@@ -267,7 +250,7 @@ export default {
 
     getResultFromHost(uuid) {
       // 引用配置文件中的服务器地址
-      // axios.defaults.baseURL=window.serverConfig.domain;
+      // axios.defaults.baseURL=window.location.host;
       // uuid = '15c4eaa8-5a23-11eb-b96e-2520f8b0de8e'
       axios({
         url: "/api/getResult",
