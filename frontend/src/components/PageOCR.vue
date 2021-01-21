@@ -26,7 +26,7 @@
         >
           清除
         </a-button>
-        <a-button v-if="typeSelect === '2'"
+        <a-button
                 type="primary"
                 :disabled="bindFileList.length === 0"
                 :loading="uploading"
@@ -39,8 +39,13 @@
     </a-layout-sider>
     <a-layout>
       <a-layout-header class="header">
+        <div class="useGPU">
+          <a-switch checked-children="开" un-checked-children="关" v-model="useGPU"/>
+          GPU
+        </div>
+
         <div class="title">
-          <h1>在线演示系统</h1>
+          <h1>{{typeSelect === '1' ? '文字识别系统':'工单识别系统'}}</h1>
         </div>
         <div class="toolbar-right">
           <a-button v-if="this.typeSelect === '2'" @click="showDrawer" theme="primary">
@@ -158,6 +163,8 @@ export default {
       timer:null,
       timeCost:"--",
 
+      useGPU: false,
+
     };
   },
   watch: {
@@ -187,7 +194,28 @@ export default {
             formData.append(file.uid, blob, file.name);
         }
         formData.append('tableId',this.tableSelect);
+        if(this.useGPU){
+          formData.append('useGPU',1);
+        }
+        else{
+          formData.append('useGPU',0);
+        }
+
         return formData;
+    },
+    async getFormDataPicture(picture){
+      const formData = new FormData();
+        const bin = await getBase64(picture.originFileObj);
+        const blob = dataURLtoBlob(bin);
+        formData.append('pic', blob, picture.name);
+      if(this.useGPU){
+        formData.append('useGPU',1);
+      }
+      else{
+        formData.append('useGPU',0);
+      }
+
+      return formData;
     },
 
     requestEverySecond(){
@@ -195,7 +223,7 @@ export default {
         return;
       }
       this.timer = window.setInterval(()=>{
-        console.log('auto req')
+        // console.log('auto req')
         if(this.requestStatus === 'handling'){
           this.getResultFromHost(this.bindFileList[0].uuid);
         }else{
@@ -206,6 +234,10 @@ export default {
     },
 
     handleUpload(){
+      if(this.typeSelect === '1'){
+        this.uploadPicture();
+        return
+      }
       //通知子组件，表格改变了
       this.$refs.childResultPresent.chooseAnotherTable();
 
@@ -217,14 +249,17 @@ export default {
       }
 
       this.uploading = true;
+      const baseURL ="http://" +  window.location.hostname + ":5000"
+      // axios.defaults.baseURL=baseURL
         this.getFormData().then((formData) =>{
             axios({
-                url: "/api/post/table",
+                url: baseURL + "/api/post/table",
                 method: "post",
                 data: formData,
             }).then((res) => {
               this.uploading = false;
                 console.log('table res=',res)
+              message.info("上传成功");
                 this.bindFileList.forEach((file)=>{
                   file.uuid = res.data;
                   // console.log('uuid=',res.data)
@@ -235,10 +270,34 @@ export default {
             });
         })
     },
+    uploadPicture(){
+      for(let pic of this.bindFileList){
+        const baseURL ="http://" + window.location.hostname + ":5000"
+        // axios.defaults.baseURL=baseURL
+        this.getFormDataPicture(pic).then((formData) =>{
+          axios({
+            url: baseURL + "/api/post/picture",
+            method: "post",
+            data: formData,
+          }).then((res) => {
+            this.uploading = false;
+            console.log('pic res=',res)
+            pic.uuid = res.data;
+            message.info("上传成功");
+            // this.requestEverySecond();
+          }).catch(()=>{
+            this.uploading = false;
+          });
+        })
+      }
+
+    },
     beforeUpload() {
+      console.log(this.bindFileList)
       if( this.typeSelect === '1'){
-        // console.log('直接上传')
-        return true;
+        // this.bindFileList = [...this.bindFileList, file];
+
+        return false;
       }
       // console.log('in beforeUpload')
       // console.log(file)
@@ -250,10 +309,12 @@ export default {
 
     getResultFromHost(uuid) {
       // 引用配置文件中的服务器地址
-      // axios.defaults.baseURL=window.location.host;
+
+      const baseURL ="http://" +  window.location.hostname + ":5000"
+      // axios.defaults.baseURL=baseURL;
       // uuid = '15c4eaa8-5a23-11eb-b96e-2520f8b0de8e'
       axios({
-        url: "/api/getResult",
+        url: baseURL + "/api/getResult",
         method: "post",
         data: {
           uuid: uuid,
@@ -293,8 +354,8 @@ export default {
     },
     //文件状态改变的钩子
     handleChange({ file, fileList }) {
-        // console.log('in handleChange')
-      // console.log(fileList)
+        console.log('in handleChange')
+      console.log(fileList)
       if (this.typeSelect === "1") {
         this.ocrFileList = fileList;
         this.bindFileList = this.ocrFileList;
@@ -394,5 +455,7 @@ h1 {
     margin: 0 auto;
 
   }
-
+.useGPU{
+  float: left;
+}
 </style>

@@ -16,9 +16,9 @@
             <router-view/>
         </div> -->
         <div class="btns">
-            <a-button @click="clickA" size="large" type="primary">文字识别在线演示</a-button>
+            <a-button @click="clickA" size="large" type="primary">文字识别系统</a-button>
             <br/>
-            <a-button @click="clickB" size="large" type="primary">工单识别在线演示</a-button>
+            <a-button @click="clickB" size="large" type="primary">工单识别系统</a-button>
         </div>
     </div>
 
