@@ -10,9 +10,9 @@ module.exports = {
     devServer: {
         proxy:{
             '/api':{
-                // target: 'http://127.0.0.1:5000/' ,
+                target: 'http://127.0.0.1:5000/' ,
                 // target: 'http://172.17.169.235:5000/' ,//小服务器
-                target: 'http://172.17.171.8:5000/' ,//大服务器
+                // target: 'http://172.17.171.8:5000/' ,//大服务器
                 changeOrigin:true,
                 pathRewrite: {
                     '^/api': '/api'

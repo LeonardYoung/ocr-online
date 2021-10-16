@@ -3,3 +3,5 @@
 /.vscode
 /backend/input
 /backend/ocr_result
+**/*.jpg
+**/*.png

@@ -45,7 +45,7 @@
         </div>
 
         <div class="title">
-          <h1>{{typeSelect === '1' ? '文字识别系统':'工单识别系统'}}</h1>
+          <h1>{{typeSelect === '1' ? '仪表盘识别系统':'工单识别系统'}}</h1>
         </div>
         <div class="toolbar-right">
           <a-button v-if="this.typeSelect === '2'" @click="showDrawer" theme="primary">
@@ -297,7 +297,7 @@ export default {
       if( this.typeSelect === '1'){
         // this.bindFileList = [...this.bindFileList, file];
 
-        return false;
+        return true;
       }
       // console.log('in beforeUpload')
       // console.log(file)

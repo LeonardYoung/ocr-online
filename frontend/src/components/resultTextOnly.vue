@@ -17,7 +17,7 @@
             </a-col>
             <a-col span="11" class="image-area">
                 <a-divider >
-                    <p class="subtitle">文字识别结果</p>
+                    <p class="subtitle">仪表盘识别结果</p>
                 </a-divider>
                 <div v-if="resultShow===0" class="result-box">
                     <p class="message-info">请选择一张图片查看识别结果</p>
